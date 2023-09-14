@@ -1,0 +1,6 @@
+venv
+data
+.cache
+.idea
+wandb
+tmp
