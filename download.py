@@ -12,7 +12,7 @@ def main():
     parser.add_argument("--datasets_dict", type=str,
                         help="parameter for proving parts of dataset to download. "
                         "It should be dict-like string that will be parsed as ast, "
-                        "e.g \'{\'CADC\': CADC_LIKE_DICT}\'\n"
+                        "e.g \'{\'CADC\': CADC_LIKE_DICT}\'.\n"
                         "Parts for each dataset can be seen by command \'listing\'")
     parser.add_argument('--base_dir', type=str)
     args = parser.parse_args()
