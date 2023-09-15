@@ -34,7 +34,8 @@ BASE_LINK = 'https://wiselab.uwaterloo.ca/cadcd_data/'
 
 def list_cadc():
     logging.info("Available data in CADC dataset:\n %s" % CADC_ALL)
-    logging.info("Dict for CADC should be provided in the same format as printed, with those dates and sequences which you want to "
+    logging.info("Dict for CADC should be provided in the same format as printed, "
+                 "with those dates and sequences which you want to "
                  "download. e.g '{\"2018_03_06\": [\"0001\"]}'")
 
 

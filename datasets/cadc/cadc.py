@@ -77,8 +77,8 @@ class CADCProxySequence:
             ).reshape((-1, 4)),
             "boxes": np.array([
                 [
-                    box['position']['x'], box['position']['y'], box['position']['z'], box['dimensions']['x'],
-                    box['dimensions']['y'], box['dimensions']['z'],
+                    box['position']['x'], box['position']['y'], box['position']['z'],
+                    box['dimensions']['x'], box['dimensions']['y'], box['dimensions']['z'],
                     box['yaw'], cadc_class2label[box['label']]
                 ]
                 for box in boxes

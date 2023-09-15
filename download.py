@@ -30,7 +30,7 @@ def main():
             datasets_data = literal_eval(args.datasets_dict)
 
         for dataset in args.datasets:
-            download(dataset, args.base_dir, datasets_data[dataset])
+            download(dataset, args.base_dir, datasets_data.get(dataset, None))
 
     elif args.command == "listing":
         for dataset in args.datasets:
