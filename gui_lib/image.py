@@ -158,7 +158,8 @@ def show_and_trasform2(image: np.array, true_boxes: List[Tensor], predictions: L
 
 def show_boxes(image: np.array, boxes: List[Tensor]):
 
-    new_image = np.ascontiguousarray(np.array(image * 256, dtype="uint8"))
+    new_image = np.ascontiguousarray(np.array(image * 256, dtype="uint8")).transpose((1, 2, 0))
+    print(boxes.min(axis=0)[0], boxes.max(axis=0)[0])
     boxes = boxes_straight2rotated(boxes)
 
     for box in boxes:
@@ -177,6 +178,8 @@ def show_boxes(image: np.array, boxes: List[Tensor]):
 def show_boxes_straight(image: np.array, boxes: List[Tensor]):
 
     new_image = np.ascontiguousarray(np.transpose(np.array(image * 256, dtype="uint8"), (1, 2, 0)))
+
+    boxes *= 512/300
 
     for box in boxes:
         box = transform_boxes_cxcy2ltrb(box)

@@ -2,5 +2,8 @@ from enum import Enum
 
 
 class SDCDataset(Enum):
-    KittiDetection = "KittiDetection"
     CADC = "CADC"
+
+    @staticmethod
+    def values():
+        return [dataset.value for dataset in SDCDataset]

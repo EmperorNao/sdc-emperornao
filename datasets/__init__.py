@@ -1,3 +1,3 @@
 
 
-__all__ = ["cadc", "kitti", "cars_2d", "datasets", "download"]
+__all__ = ["cadc", "datasets", "download"]

@@ -1,3 +1,5 @@
+import logging
+
 import wget
 from os.path import join
 
@@ -30,15 +32,26 @@ CADC_ALL = {
 BASE_LINK = 'https://wiselab.uwaterloo.ca/cadcd_data/'
 
 
-def download_cadc(base_path: str, cadc_dict: Dict = CADC_ALL):
+def list_cadc():
+    logging.info("Available data in CADC dataset:\n %s" % CADC_ALL)
+    logging.info("Dict for CADC should be provided in the same format as printed, with those dates and sequences which you want to "
+                 "download. e.g '{\"2018_03_06\": [\"0001\"]}'")
+
+
+def download_cadc(base_path: str, cadc_dict: dict):
+
+    if not cadc_dict:
+        cadc_dict = CADC_ALL
 
     base_path = join(base_path, "cadc")
     mkdir(base_path, True)
 
+    logging.info("Downloading CADC dataset in directory %s" % base_path)
     for date in cadc_dict:
 
         date_path = join(base_path, date)
         mkdir(date_path, True)
+        logging.info("Date %s" % date)
 
         calib_url = BASE_LINK + date + '/calib.zip'
         calib_filename = wget.download(calib_url, join(date_path, 'calib.zip'))
@@ -48,6 +61,7 @@ def download_cadc(base_path: str, cadc_dict: Dict = CADC_ALL):
 
             drive_path = join(date_path, drive)
             mkdir(drive_path, True)
+            logging.info("Drive %s" % drive)
 
             base_url = BASE_LINK + date + '/' + drive
 
