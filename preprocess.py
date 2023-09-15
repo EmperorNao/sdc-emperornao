@@ -1,5 +1,4 @@
 import argparse
-from datasets.cadc.torch2d import CADCPreprocessor
 
 
 def main():
@@ -15,12 +14,12 @@ def main():
 
     args = parser.parse_args()
 
-    preprocessor = CADCPreprocessor(args.datasets)
-
-    preprocessor.to_2d_rot_dataset(args.datasets_2d,
-                                   scene_size=(args.scene_size, args.scene_size),
-                                   train_val_test_ratios=(args.train_size, args.val_size, args.test_size)
-                                   )
+    # preprocessor = CADCPreprocessor(args.datasets)
+    #
+    # preprocessor.to_2d_rot_dataset(args.datasets_2d,
+    #                                scene_size=(args.scene_size, args.scene_size),
+    #                                train_val_test_ratios=(args.train_size, args.val_size, args.test_size)
+    #                                )
 
 
 if __name__ == "__main__":

@@ -26,7 +26,7 @@ from visualizer.canvas2d import CanvasImageDrawer
 from visualizer.canvas3d import CanvasPointCloudDrawer
 from visualizer.subwindow import Display
 from datasets.cadc.cadc import CADCProxySequence
-from gui_lib.image import create_bev_image
+from gui_lib.bev import create_bev_image
 
 
 class CarVisualizer(QtWidgets.QMainWindow):
@@ -173,7 +173,7 @@ class CarVisualizer(QtWidgets.QMainWindow):
         if not os.path.exists(current_dir):
             os.mkdir(current_dir)
 
-        l = {
+        cam2pos = {
             0: 3,
             1: 4,
             2: 5,
@@ -184,8 +184,8 @@ class CarVisualizer(QtWidgets.QMainWindow):
             7: 0
         }
         for i in range(9):
-            if i in l:
-                self.subs[i].set_image(QPixmap(f"{self.dataset_path}/labeled/image_{str(l[i]).rjust(2, '0')}/data/0000000{str(value).rjust(3, '0')}.png"))
+            if i in cam2pos:
+                self.subs[i].set_image(QPixmap(f"{self.dataset_path}/labeled/image_{str(cam2pos[i]).rjust(2, '0')}/data/0000000{str(value).rjust(3, '0')}.png"))
             if i == 9:
                 pass
 

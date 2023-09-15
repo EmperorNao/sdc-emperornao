@@ -4,16 +4,14 @@ import vispy
 from matplotlib import pyplot as plt
 from vispy.scene import SceneCanvas, visuals
 
-from gui_lib.utils import boxes_straight2rotated_3d
+from gui_lib.transformations import boxes_straight2rotated_3d
 
 
 class CanvasPointCloudDrawer:
     def __init__(self):
         self.canvas = SceneCanvas(size=(1500, 1500), keys='interactive', show=True)
-        # interface (n next, b back, q quit, very simple)
         self.canvas.events.key_press.connect(self.key_press)
         self.canvas.events.draw.connect(self.draw)
-        # grid
         self.grid = self.canvas.central_widget.add_grid()
 
         # laserscan part
@@ -34,11 +32,7 @@ class CanvasPointCloudDrawer:
 
     def get_mpl_colormap(self, cmap_name):
         cmap = plt.get_cmap(cmap_name)
-
-        # Initialize the matplotlib color map
         sm = plt.cm.ScalarMappable(cmap=cmap)
-
-        # Obtain linear color range
         color_range = sm.to_rgba(np.linspace(0, 1, 256), bytes=True)[:, 2::-1]
 
         return color_range.reshape(256, 3).astype(np.float32) / 255.0
@@ -60,12 +54,10 @@ class CanvasPointCloudDrawer:
                                size=1)
         if labels is not None:
             boxes = labels[:, 0:7]
+            boxes[:, 6] = -labels[:, 6]
             labels = labels[:, -1]
 
             old_boxes = np.copy(boxes)
-            # boxes[:, 0] = old_boxes[:, 1]
-            # boxes[:, 1] = old_boxes[:, 0]
-            # TODO WTF?????? WHY WE NEED CHANGE SIZES BUT NOT AXES HERE????
             boxes[:, 3] = old_boxes[:, 4]
             boxes[:, 4] = old_boxes[:, 3]
 
