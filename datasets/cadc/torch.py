@@ -33,10 +33,10 @@ class CADCDatasetLidarOnly(Dataset):
     def __len__(self) -> int:
         return sum([len(seq) for seq in self.sequences])
 
-    def __getitem__(self, idx: int) -> Tuple[Tensor, Dict[str, Tensor], Dict[str, yaml.YAMLObject]]:
+    def __getitem__(self, idx: int) -> Tuple[Tensor, Tensor, Dict[str, yaml.YAMLObject]]:
 
         info = self.idx2frame[idx]
         frame = self.sequences[info['seq_idx']][info['frame_idx']]
         calib = self.sequences[info['seq_idx']].get_calib()
 
-        return Tensor(frame['points']), {'boxes': frame['boxes'][:, :7], 'labels': frame['boxes'][:, 7]}, calib
+        return Tensor(frame['points']), Tensor(frame['boxes']), calib

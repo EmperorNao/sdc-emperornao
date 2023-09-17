@@ -1,10 +1,15 @@
 import cv2
 from utils import qt_cv2_fix  # noqa
+from PIL import Image
 import numpy as np
 from matplotlib import pyplot as plt
 
 from utils.types import *
 from gui_lib.transformations import boxes_straight2rotated
+
+
+def get_image(image_path: str):
+    return Image.open(image_path)
 
 
 def get_image_with_boxes(
@@ -32,3 +37,14 @@ def get_image_with_boxes(
                 cv2.line(new_image, tuple_to_int(box[i - 1]), tuple_to_int(box[i]), color, thickness=1, lineType=16)
 
     return new_image
+
+
+def draw_image_with_boxes(
+        image: np.array,
+        boxes: np.array,
+        rotate: bool = True,
+        color: Tuple[int, int, int] = (100, 100, 100)
+):
+    image = get_image_with_boxes(image, boxes, rotate, color)
+    plt.imshow(image)
+    plt.show()
