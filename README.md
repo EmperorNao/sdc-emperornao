@@ -43,3 +43,5 @@
 ![alt text](examples/bev.png)
 
 Сгенерировано с помощью [code_examples/draw_bev.py](code_examples/draw_bev.py)
+
+Для преобразования датасета в 2d object detection с поворотом выполняется препроцессинг: 
