@@ -10,7 +10,6 @@ pandas
 matplotlib~=3.7.0
 torchvision~=0.14.1
 opencv-python-headless
-
 opencv-python~=4.7.0.72
 Pillow~=9.4.0
 vispy~=0.13.0

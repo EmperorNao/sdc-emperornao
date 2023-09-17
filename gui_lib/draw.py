@@ -8,8 +8,8 @@ from utils.types import *
 from gui_lib.transformations import boxes_straight2rotated
 
 
-def get_image(image_path: str):
-    return Image.open(image_path)
+def get_image(image_path: str) -> np.array:
+    return np.array(Image.open(image_path).convert('RGB'))
 
 
 def get_image_with_boxes(
@@ -43,7 +43,7 @@ def draw_image_with_boxes(
         image: np.array,
         boxes: np.array,
         rotate: bool = True,
-        color: Tuple[int, int, int] = (100, 100, 100)
+        color: Tuple[int, int, int] = (255, 255, 255)
 ):
     image = get_image_with_boxes(image, boxes, rotate, color)
     plt.imshow(image)

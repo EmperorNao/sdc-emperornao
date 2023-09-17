@@ -10,10 +10,10 @@
 Он представляет собой небольшие записанные последовательности кадров, которые содержат в себе: изображения с 8 камер,
 лидарное облако точек, размеченные 3D bounding box'ы. 
 
-Для загрузки датасета предлагается использовать тулзу [`download.py`](./download.py):
-Например: 
+Для загрузки датасета предлагается использовать тулзу [`download.py`](./download.py),
+например: 
 
-`venv/bin/python3 download.py download --base_dir data/test --datasets CADC`
+`venv/bin/python3 download.py download --base_dir data/cadc --datasets CADC`
 
 <details>
   <summary>--help</summary>
@@ -32,7 +32,7 @@
         
 </details>
 
-Для представления каждой последовательности кадров в датасете, существует класс [`CADCProxySequence`](datasets/cadc/cadc.py#L21).
+Для представления каждой последовательности кадров в датасете, существует класс [`CADCProxySequence`](datasets/cadc/cadc.py#L22).
 
 
 ## Birds-eye view
@@ -44,4 +44,17 @@
 
 Сгенерировано с помощью [code_examples/draw_bev.py](code_examples/draw_bev.py)
 
-Для преобразования датасета в 2d object detection с поворотом выполняется препроцессинг: 
+---
+
+Для преобразования датасета CADC в 2d object detection с поворотом выполняется препроцессинг тулзой [`rot_2d_preprocess.py`](./rot_2d_preprocess.py), например:
+
+`venv/bin/python3 rot_2d_preprocess.py --dataset data/cadc --dataset_2d data/cadc_2d_rot --scene_size 50 --image_size 512 --train_size 0.7 --val_size 0.2 --test_size 0.1`
+
+Для использования полученного датасета есть класс, наследующийся от `torch.utils.data.Dataset`: [`CADCBevDataset`](datasets/cadc/torch2d_rot.py#79), 
+пример использования в [code_examples/cadc_2d_dataset.py](code_examples/cadc_2d_dataset.py).
+
+---
+
+
+
+
