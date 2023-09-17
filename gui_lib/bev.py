@@ -6,13 +6,19 @@ from matplotlib import pyplot as plt, patches
 
 from utils.types import *
 from utils.types import make_tuple
-from gui_lib.transformations import boxes_straight2rotated_3d
+from gui_lib.transformations import boxes_straight2rotated_3d, boxes_straight2rotated, boxes_rotated2cxcydxdy
 
 
 def translate_boxes_lidar2bev(
         original_boxes: np.array,
         scene_size: Tuple[int, int]
 ) -> Tuple[np.array, np.array]:
+    """
+    :param original_boxes: 3d bounding boxes with shape (n, 8)
+    :param scene_size: size of scene for boxes to take, all boxes which center lies outside scene wouldn't be taken
+    :return: pair (indexes, bboxes), indexes with shape (filtered_n) that was taken and
+        bboxes with shape (filtered_n, 4, 2) for bird's-eye view
+    """
 
     boxes = np.copy(original_boxes)
 
@@ -54,16 +60,31 @@ def translate_boxes_lidar2bev_image(
         scene_size: Tuple[int, int],
         image_size: Tuple[int, int],
 ) -> np.array:
+    """
+    :param original_boxes: 3d bounding boxes with shape (n, 8),
+    :param scene_size: size of scene for boxes to take, all boxes which center lies outside scene wouldn't be taken
+    :param image_size: size of image for which we need to translate our boxes
+    :return: boxes with shape (filtered_n, 6) in image coordinates w.r.t left top coordinate system's origin in format;
+        each box presented in format (cx, cy, dx, dy, yaw, shape)
+    """
 
-    cx = original_boxes[:, 0] + scene_size[0]
-    dx = original_boxes[:, 3]
+    boxes = np.copy(original_boxes)
 
-    cy = original_boxes[:, 1] + scene_size[1]
-    dy = original_boxes[:, 4]
+    indexes = np.logical_and(
+        np.logical_and(-scene_size[0] < boxes[:, 0], boxes[:, 0] < scene_size[0]),
+        np.logical_and(-scene_size[1] < boxes[:, 1], boxes[:, 1] < scene_size[1])
+    )
+    boxes = boxes[indexes]
 
-    yaw = original_boxes[:, 6]
+    cx = boxes[:, 0] + scene_size[0]
+    dx = boxes[:, 3]
 
-    label = original_boxes[:, 7]
+    cy = boxes[:, 1] + scene_size[1]
+    dy = boxes[:, 4]
+
+    yaw = boxes[:, 6]
+
+    label = boxes[:, 7]
 
     xs, ys = image_size[0] / (scene_size[0] * 2), image_size[1] / (scene_size[1] * 2)
 
@@ -77,11 +98,20 @@ def translate_boxes_lidar2bev_image(
     image_cy = image_size[1] - cx
     image_dx = dy
     image_dy = dx
-    image_yaw = -(math.radians(90) + yaw)
+    image_yaw = -yaw
 
-    return np.stack(
-        (image_cx, image_cy, image_dx, image_dy, image_yaw, label),
+    # rotate -90 degree for shifting to (0, 0)
+    boxes = np.stack(
+        (image_cx, image_cy, image_dx, image_dy, np.full_like(image_cx, -math.radians(90)), label),
         axis=-1
+    )
+
+    rot = boxes_straight2rotated(boxes)
+    boxes = boxes_rotated2cxcydxdy(rot)
+
+    return np.concatenate(
+        (boxes, np.expand_dims(image_yaw, -1), np.expand_dims(label, -1)),
+        axis=1
     )
 
 

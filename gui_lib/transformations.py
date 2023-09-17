@@ -1,5 +1,3 @@
-import math
-
 import numpy as np
 
 
@@ -85,3 +83,30 @@ def boxes_straight2rotated_3d(boxes: np.array) -> np.array:
     rotated_boxes = new_d + np.expand_dims(np.array([cx, cy, cz]), 0).transpose(2, 0, 1)
 
     return rotated_boxes
+
+
+def boxes_rotated2cxcydxdy(
+        boxes: np.array
+):
+    """
+    :param boxes: array of 2d rotated bounding boxes with 4 points with shape (b, 4, 2)
+    :return: array of 2d bounding boxes in format (cx, cy, dx, dy) with shape (b, 4)
+    """
+
+    x1 = np.expand_dims(np.min(boxes[:, :, 0], axis=1), -1)
+    x2 = np.expand_dims(np.max(boxes[:, :, 0], axis=1), -1)
+    y1 = np.expand_dims(np.min(boxes[:, :, 1], axis=1), -1)
+    y2 = np.expand_dims(np.max(boxes[:, :, 1], axis=1), -1)
+
+    wdx = np.abs(x2 - x1) / 2
+    wdy = np.abs(y2 - y1) / 2
+    cx = x1 + wdx
+    cy = y1 + wdy
+
+    dx = np.expand_dims(np.linalg.norm(boxes[:, 0] - boxes[:, 1], ord=2, axis=1), -1)
+    dy = np.expand_dims(np.linalg.norm(boxes[:, 1] - boxes[:, 2], ord=2, axis=1), -1)
+
+    return np.concatenate(
+        (cx, cy, dx, dy),
+        axis=1
+    )

@@ -7,13 +7,28 @@ from utils.types import *
 from gui_lib.transformations import boxes_straight2rotated
 
 
-def draw_with_boxes(image: np.array, true_boxes: np.array, color: Tuple[int, int, int] = (100, 100, 100)):
+def get_image_with_boxes(
+        image: np.array,
+        boxes: np.array,
+        rotate: bool = True,
+        color: Tuple[int, int, int] = (100, 100, 100)
+):
 
     new_image = np.ascontiguousarray(np.array(image, dtype="uint8"))
-    rot_boxes = boxes_straight2rotated(true_boxes)
-    for box in rot_boxes:
-        for i in range(4):
-            cv2.line(new_image, tuple_to_int(box[i - 1]), tuple_to_int(box[i]), color, thickness=1, lineType=16)
+    if rotate:
+        rot_boxes = boxes_straight2rotated(boxes)
+        for box in rot_boxes:
+            for i in range(4):
+                cv2.line(new_image, tuple_to_int(box[i - 1]), tuple_to_int(box[i]), color, thickness=1, lineType=16)
+    else:
+        for box in boxes:
+            cx, cy, dx, dy = box[:4]
+            box = [[cx - dx / 2, cy - dy / 2],
+                   [cx - dx / 2, cy + dy / 2],
+                   [cx + dx / 2, cy + dy / 2],
+                   [cx + dx / 2, cy - dy / 2]
+            ]
+            for i in range(4):
+                cv2.line(new_image, tuple_to_int(box[i - 1]), tuple_to_int(box[i]), color, thickness=1, lineType=16)
 
-    plt.imshow(new_image)
-    plt.show()
+    return new_image
