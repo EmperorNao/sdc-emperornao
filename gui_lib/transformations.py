@@ -1,12 +1,10 @@
 import math
 
 import numpy as np
-from typing import *
 
 
 def translate_points_2d(points: np.array, angle: np.array) -> np.array:
     """
-
     :param points: array of shape (b, n, 2)
         b - batch, n - points to translate, 2 - dimensions (x, y)
     :param angle: array of size b with angles
@@ -17,31 +15,38 @@ def translate_points_2d(points: np.array, angle: np.array) -> np.array:
         [-np.sin(angle), np.cos(angle)]
     ])
 
-    return points.transpose(2, 0, 1) @ rot.transpose(2, 0, 1)
+    return points @ rot.transpose(2, 0, 1)
 
 
-def rotate_points_3d(points: np.array, angle: float, axis: str) -> np.array:
+def rotate_points_3d(points: np.array, angle: np.array, axis: str) -> np.array:
+    """
+    :param points: array of shape (b, n, 3)
+        b - batch, n - points to translate, 3 - dimensions (x, y, z)
+    :param angle: array of size b with angles
+    :param axis: string one of 'x', 'y' or 'z' in which dim to rotate points
+    :return: return array of shape (b, n, z) in which all points in batch rotated by angle
+    """
     assert axis in ['x', 'y', 'z']
     if axis == 'z':
         rot = np.array([
-            [math.cos(angle), -math.sin(angle), 0],
-            [math.sin(angle), math.cos(angle), 0],
-            [0, 0, 1]
+            [np.cos(angle), -np.sin(angle), np.zeros_like(angle)],
+            [np.sin(angle), np.cos(angle), np.zeros_like(angle)],
+            [np.zeros_like(angle), np.zeros_like(angle), np.ones_like(angle)]
         ])
     if axis == 'y':
         rot = np.array([
-            [math.cos(angle), 0, math.sin(angle)],
-            [0, 1, 0],
-            [-math.sin(angle), 0, math.cos(angle)],
+            [np.cos(angle), np.zeros_like(angle), np.sin(angle)],
+            [np.zeros_like(angle), np.ones_like(angle), np.zeros_like(angle)],
+            [-np.sin(angle), np.zeros_like(angle), np.cos(angle)],
         ])
     if axis == 'x':
         rot = np.array([
-            [1, 0, 0],
-            [0, math.cos(angle), -math.sin(angle)],
-            [0, math.sin(angle), math.cos(angle)],
+            [np.ones_like(angle), np.zeros_like(angle), np.zeros_like(angle)],
+            [np.zeros_like(angle), np.cos(angle), -np.sin(angle)],
+            [np.zeros_like(angle), np.sin(angle), np.cos(angle)],
         ])
 
-    return points @ rot
+    return points @ rot.transpose(2, 0, 1)
 
 
 def boxes_straight2rotated(boxes: np.array) -> np.array:
@@ -52,7 +57,7 @@ def boxes_straight2rotated(boxes: np.array) -> np.array:
 
     cx, cy, dx, dy, yaw = boxes[:, :5].transpose(1, 0)
     dx, dy = dx / 2, dy / 2
-    new_d = translate_points_2d(np.array([[-dx, -dy], [-dx, dy], [dx, dy], [dx, -dy]]), yaw)
+    new_d = translate_points_2d(np.array([[-dx, -dy], [-dx, dy], [dx, dy], [dx, -dy]]).transpose(2, 0, 1), yaw)
     rotated_boxes = new_d + np.expand_dims(np.array([cx, cy]), 0).transpose(2, 0, 1)
 
     return rotated_boxes
@@ -64,20 +69,19 @@ def boxes_straight2rotated_3d(boxes: np.array) -> np.array:
         :return np.array with 8 rotated points for each box, shape (n,8,3)
     """
 
-    rotated_boxes = []
-    for box in boxes:
-        cx, cy, cz, dx, dy, dz, yaw = box[:7]
-        dx, dy, dz = dx / 2, dy / 2, dz / 2
-        new_d = rotate_points_3d(np.array([
-            [-dx, -dy, -dz],
-            [-dx, dy, -dz],
-            [-dx, dy, dz],
-            [-dx, -dy, dz],
-            [dx, -dy, -dz],
-            [dx, dy, -dz],
-            [dx, dy, dz],
-            [dx, -dy, dz]
-        ]), yaw, axis='z')
-        rotated_boxes.append(new_d + np.array([cx, cy, cz]))
+    cx, cy, cz, dx, dy, dz, yaw = boxes[:, :7].transpose(1, 0)
+    dx, dy, dz = dx / 2, dy / 2, dz / 2
+    new_d = rotate_points_3d(np.array([
+        [-dx, -dy, -dz],
+        [-dx, dy, -dz],
+        [-dx, dy, dz],
+        [-dx, -dy, dz],
+        [dx, -dy, -dz],
+        [dx, dy, -dz],
+        [dx, dy, dz],
+        [dx, -dy, dz]
+    ]).transpose(2, 0, 1), yaw, axis='z')
 
-    return np.stack(rotated_boxes, axis=0)
+    rotated_boxes = new_d + np.expand_dims(np.array([cx, cy, cz]), 0).transpose(2, 0, 1)
+
+    return rotated_boxes

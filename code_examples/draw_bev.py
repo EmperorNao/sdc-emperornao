@@ -19,8 +19,8 @@ frame = cadc_seq[0]
 image_path = join(tmp_path, 'draw_bev.png')
 image_boxes_path = join(tmp_path, 'draw_bev_boxes.png')
 
-create_bev_image((50, 50), frame['points'], image_path)
-create_bev_image((50, 50), frame['points'], image_boxes_path, frame['boxes'])
+create_bev_image(50, 512, frame['points'], image_path)
+create_bev_image(50, 512, frame['points'], image_boxes_path, frame['boxes'], draw_boxes=True)
 
 image = Image.open(join(tmp_path, image_path))
 image_boxes = Image.open(image_boxes_path)

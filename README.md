@@ -40,7 +40,7 @@
 Самый простой подход для детекции объектов в 3D облаке точек заключается в преобразовании облака точек 
 в изображение вида сверху и детекции по нему:
 
-![alt text](examples/bev.png)
+![alt text](code_examples/examples/bev.png)
 
 Сгенерировано с помощью [code_examples/draw_bev.py](code_examples/draw_bev.py)
 
